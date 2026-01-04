@@ -25,6 +25,11 @@ import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.PluginParameterExpressionEvaluator;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
+<<<<<<< HEAD
+=======
+import org.apache.maven.project.CycleDetectedException;
+import org.apache.maven.project.DuplicateProjectException;
+>>>>>>> db6018d (WIP Maven 4)
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.codehaus.plexus.component.configurator.expression.TypeAwareExpressionEvaluator;

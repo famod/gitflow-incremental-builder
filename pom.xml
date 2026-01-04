@@ -52,9 +52,13 @@
         </repository>
     </distributionManagement>
 
+	<!--<prerequisites>
+	    <maven>3.9.0</maven>
+	</prerequisites>-->
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
