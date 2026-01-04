@@ -26,11 +26,11 @@ import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.PluginParameterExpressionEvaluator;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
+import org.apache.maven.project.CycleDetectedException;
 import org.apache.maven.project.DuplicateProjectException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.codehaus.plexus.component.configurator.expression.TypeAwareExpressionEvaluator;
-import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +60,7 @@ class DownstreamCalculator {
                 // will not give us any downstream dependencies for modules that are not part of the trimmed reactor.
                 // Therefore we need to create a separate graph that contains all modules.
                 try {
-                    try {
-                        graph = new DefaultProjectDependencyGraph(allProjects);
-                    } catch (NoClassDefFoundError err) {
-                        // cannot use DPDG in maven < 3.8.8 (https://issues.apache.org/jira/browse/MNG-6972) so use our own copy
-                        graph = new Maven38DefaultDependencyGraph(allProjects);
-                    }
+                    graph = new DefaultProjectDependencyGraph(allProjects);
                 } catch (CycleDetectedException | DuplicateProjectException e) {
                     throw new IllegalStateException(e); // extremely unlikely
                 }

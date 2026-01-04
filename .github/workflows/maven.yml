@@ -102,25 +102,21 @@ jobs:
       fail-fast: false
       matrix:
         java-maven:
+	      # TODO: more (Maven 4) variants?
           - {
-            name: "JDK 11 & Maven 3.6",
-            java-version: 11,
-            maven-version: 3.6.3
-          }
-          - {
-            name: "JDK 17 & Maven 3.8",
-            java-version: 17,
-            maven-version: 3.8.8
-          }
-          - {
-            name: "JDK 11 & Maven 3.9",
-            java-version: 11,
-            maven-version: 3.9.12
+            name: "JDK 21 & Maven 4.0",
+            java-version: 21,
+            maven-version: 4.0.0-rc-5
           }
           - {
             name: "JDK 21 & Maven 3.9",
             java-version: 21,
             maven-version: 3.9.12
+          }
+          - {
+            name: "JDK 25 & Maven 4.0",
+            java-version: 25,
+            maven-version: 4.0.0-rc-5
           }
           - {
             name: "JDK 25 & Maven 3.9",
