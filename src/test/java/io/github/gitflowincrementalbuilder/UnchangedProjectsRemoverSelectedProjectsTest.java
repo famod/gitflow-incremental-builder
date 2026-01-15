@@ -443,6 +443,7 @@ public class UnchangedProjectsRemoverSelectedProjectsTest extends BaseUnchangedP
     public void moduleAChanged_deselectedA() {
         MavenProject moduleB = addModuleMock(AID_MODULE_B, false);
         MavenProject moduleC = addModuleMock(AID_MODULE_C, false);
+        //setUpstreamProjects(moduleB, moduleA);
         setUpstreamProjects(moduleC, moduleB, moduleA);
         setDownstreamProjectsNonTransitive(moduleB, moduleC);
         setDownstreamProjectsNonTransitive(moduleA, moduleB);

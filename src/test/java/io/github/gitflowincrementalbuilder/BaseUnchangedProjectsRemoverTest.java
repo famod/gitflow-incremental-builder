@@ -3,6 +3,7 @@ package io.github.gitflowincrementalbuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -143,7 +144,7 @@ abstract class BaseUnchangedProjectsRemoverTest {
         when(newModuleMock.getProperties()).thenReturn(new Properties());
         newModuleMock.getProperties().putAll(gibProperties);
 
-        when(newModuleMock.getModel()).thenReturn(new Model());
+        when(newModuleMock.getModel()).thenReturn(spy(new Model()));
 
         if (moduleA != null) {  // support the creation of module-A itself via this method
             setUpstreamProjects(newModuleMock, moduleA);
@@ -168,6 +169,8 @@ abstract class BaseUnchangedProjectsRemoverTest {
             deps.addAll(downstreamModule.getDependencies());
             deps.add(dep);
             when(downstreamModule.getDependencies()).thenReturn(Collections.unmodifiableList(deps));
+            // Maven 4: Also add to Model for DefaultProjectDependencyGraph to work correctly
+            downstreamModule.getModel().addDependency(dep);
         }
     }
 
