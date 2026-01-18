@@ -105,11 +105,7 @@ abstract class BaseChangedProjectsTest extends BaseRepoTest {
                 Paths.get("parent/testJarDependent")
         ));
 
-        final List<MavenProject> projects = assertExpectedProjectsFound(expected, mavenSessionMock -> {
-            // remove child3 (which contains changes) from the reactor/session
-            mavenSessionMock.getAllProjects().removeIf(proj -> proj.getArtifactId().equals("child3"));
-            mavenSessionMock.getProjects().removeIf(proj -> proj.getArtifactId().equals("child3"));
-        });
+        final List<MavenProject> projects = assertExpectedProjectsFound(expected, mavenSessionMock -> removeModuleFromReactor(mavenSessionMock, "child3"));
         assertThat(projects).noneMatch(project -> project.getContextValue(ChangedProjects.CTX_TEST_ONLY) == Boolean.TRUE);
     }
 
@@ -156,7 +152,7 @@ abstract class BaseChangedProjectsTest extends BaseRepoTest {
 
         final Set<Path> expected = Collections.emptySet();
 
-        assertExpectedProjectsFound(expected);
+        assertExpectedProjectsFound(expected, mavenSessionMock -> removeModuleFromReactor(mavenSessionMock, "foo"));
 
         verify(modulesPathMapSpy, times(2)).get(fooModule);
     }
@@ -171,7 +167,7 @@ abstract class BaseChangedProjectsTest extends BaseRepoTest {
 
         final Set<Path> expected = Collections.emptySet();
 
-        assertExpectedProjectsFound(expected);
+        assertExpectedProjectsFound(expected, mavenSessionMock -> removeModuleFromReactor(mavenSessionMock, "java"));
 
         verify(modulesPathMapSpy).get(testProjectPath);
     }
@@ -194,5 +190,10 @@ abstract class BaseChangedProjectsTest extends BaseRepoTest {
         assertThat(actual).isEqualTo(expected);
 
         return new ArrayList<>(foundProjects);
+    }
+
+    private void removeModuleFromReactor(MavenSession mavenSession, String artifactId) {
+        mavenSession.getAllProjects().removeIf(proj -> proj.getArtifactId().equals(artifactId));
+        mavenSession.getProjects().removeIf(proj -> proj.getArtifactId().equals(artifactId));
     }
 }
