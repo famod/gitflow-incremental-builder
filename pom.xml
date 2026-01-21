@@ -52,9 +52,9 @@
         </repository>
     </distributionManagement>
 
-	<!--<prerequisites>
-	    <maven>3.9.0</maven>
-	</prerequisites>-->
+	<prerequisites>
+	    <maven>3.9.6</maven>
+	</prerequisites>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
