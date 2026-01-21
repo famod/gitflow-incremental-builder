@@ -42,7 +42,7 @@ import io.github.gitflowincrementalbuilder.util.ProcessUtils;
 /**
  * Integration test base running the {@code mvn} command on a test project with active {@code gitflow-incremental-builder}.
  * <p/>
- * Tests extending this base class are expected to be called via {@code maven-failsafe-plugin}, dependends on {@code settings-it.xml} and requires two system
+ * Tests extending this base class are expected to be called via {@code maven-failsafe-plugin}, depends on {@code settings-it.xml} and requires two system
  * properties:
  * <ul>
  * <li>{@code settings.localRepository} defining the path to the regular local Maven repo (containing the all the basic dependencies and plugins)
