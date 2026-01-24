@@ -101,8 +101,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # TODO: more (Maven 4) variants?
         java-maven:
-	      # TODO: more (Maven 4) variants?
           - {
             name: "JDK 21 & Maven 4.0",
             java-version: 21,
