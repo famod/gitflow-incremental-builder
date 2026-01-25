@@ -26,8 +26,6 @@ import org.apache.maven.model.Model;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.plugin.PluginParameterExpressionEvaluator;
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
-import org.apache.maven.project.CycleDetectedException;
-import org.apache.maven.project.DuplicateProjectException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.codehaus.plexus.component.configurator.expression.TypeAwareExpressionEvaluator;
@@ -61,7 +59,9 @@ class DownstreamCalculator {
                 // Therefore we need to create a separate graph that contains all modules.
                 try {
                     graph = new DefaultProjectDependencyGraph(allProjects);
-                } catch (CycleDetectedException | DuplicateProjectException e) {
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (Exception e) { // actually CycleDetectedException | DuplicateProjectException, but CDE moved in Maven 4 so don't catch directly
                     throw new IllegalStateException(e); // extremely unlikely
                 }
             } else {

@@ -30,9 +30,9 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -271,7 +271,6 @@ public abstract class MavenIntegrationTestBase extends BaseRepoTest {
     }
 
     @Test
-    @Disabled
     public void buildWithSingleSelectedModule() throws Exception {
         checkout(Branch.DEVELOP);
 
@@ -279,9 +278,7 @@ public abstract class MavenIntegrationTestBase extends BaseRepoTest {
 
         assertThat(output).doesNotContain("Building child1")
                 .contains("Building child2")
-                .contains("Building subchild1")
                 .doesNotContain("Building subchild42")
-                .contains("Building subchild2")
                 .doesNotContain("Building child3")
                 .doesNotContain("Building child4")
                 .doesNotContain("Building subchild41")
@@ -289,9 +286,21 @@ public abstract class MavenIntegrationTestBase extends BaseRepoTest {
                 .doesNotContain("Building testJarDependency")
                 .doesNotContain("Building testJarDependent")
                 .contains("Building explicitly selected projects");
+
+        if (System.getProperty("maven.version").startsWith("3.")) {
+            // Maven 3 builds selected modules non-recursively by default
+            assertThat(output)
+                    .doesNotContain("Building subchild1")
+                    .doesNotContain("Building subchild2");
+        } else {
+            assertThat(output)
+                    .contains("Building subchild1")
+                    .contains("Building subchild2");
+        }
     }
 
     @Test
+    @DisabledIfSystemProperty(named = "maven.version", matches = "^3[.].*", disabledReason = "-pl and -N are not supported together in Maven 3")
     public void buildWithSingleSelectedModule_nonRecursive() throws Exception {
         checkout(Branch.DEVELOP);
 
