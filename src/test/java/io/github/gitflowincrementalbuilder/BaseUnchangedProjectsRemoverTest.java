@@ -31,6 +31,7 @@ import org.apache.maven.execution.ProjectDependencyGraph;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.rtinfo.RuntimeInformation;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInfo;
@@ -85,6 +86,9 @@ abstract class BaseUnchangedProjectsRemoverTest {
 
     @Mock(strictness = Mock.Strictness.LENIENT)
     protected ImpactedDependencies impactedDependencies;
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    protected RuntimeInformation runtimeInformationMock;    // isMavenVersion() returns false by default, i.e. Maven 3 behavior
 
     @Spy
     protected DownstreamCalculator downstreamCalculator;

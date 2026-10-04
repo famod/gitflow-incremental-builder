@@ -32,6 +32,7 @@ import javax.inject.Singleton;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.rtinfo.RuntimeInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,8 @@ class UnchangedProjectsRemover {
 
     @Inject private GitProvider gitProvider;
 
+    @Inject private RuntimeInformation runtimeInformation;
+
     public void act(Configuration config) {
         try {
             doAct(config);
@@ -77,7 +80,7 @@ class UnchangedProjectsRemover {
         if (config.disableSelectedProjectsHandling) {
             selected = Collections.emptySet();
         } else {
-            selected = ProjectSelectionUtil.gatherSelectedProjects(config.mavenSession);
+            selected = ProjectSelectionUtil.gatherSelectedProjects(config.mavenSession, runtimeInformation.isMavenVersion("[4,)"));
 
             // before checking for any changes, check whether there are _only_ explicitly selected projects (-pl) which have the highest priority
             if (onlySelectedModulesPresent(selected, config.mavenSession)) {
@@ -370,15 +373,25 @@ class UnchangedProjectsRemover {
 
     private static class ProjectSelectionUtil {
 
-        static Set<MavenProject> gatherSelectedProjects(MavenSession mavenSession) {
+        static Set<MavenProject> gatherSelectedProjects(MavenSession mavenSession, boolean maven4OrLater) {
             List<String> selectors = mavenSession.getRequest().getSelectedProjects();
             if (selectors.isEmpty()) {
                 return Collections.emptySet();
             }
             File reactorDirectory = Optional.ofNullable(mavenSession.getRequest().getBaseDirectory()).map(File::new).orElse(null);
-            return mavenSession.getProjects().stream()
+            Set<MavenProject> selected = mavenSession.getProjects().stream()
                     .filter(proj -> selectors.stream().anyMatch(sel -> matchesSelector(proj, sel, reactorDirectory)))
                     .collect(Collectors.toCollection(LinkedHashSet::new));
+            // Maven 4 implicitly selects all (recursive) modules of a project selected via -pl, unless building non-recursively (-N).
+            // Maven 3 does not do that (modules of a selected project are only present via -amd, which does not make them "selected").
+            if (maven4OrLater && mavenSession.getRequest().isRecursive()) {
+                List<MavenProject> sessionProjects = mavenSession.getProjects();
+                Set<MavenProject> modules = selected.stream()
+                        .flatMap(proj -> Modules.collectModulesOf(proj, sessionProjects).stream())
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                selected.addAll(modules);
+            }
+            return selected;
         }
 
         // inspired by: org.apache.maven.graph.DefaultGraphBuilder.isMatchingProject(MavenProject, String, File)
